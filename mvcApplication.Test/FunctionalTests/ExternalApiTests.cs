@@ -11,15 +11,12 @@ using Xunit.Abstractions;
 
 namespace mvcApplication.Test.FunctionalTests
 {
-    public class ApiTests : IClassFixture<AuthorizedUserHTTPClientFixture>
+    public class ExternalApiTests 
     {
-        AuthorizedUserHTTPClientFixture AuthorizedUserHTTPClientFixture { get; set; }
-
         ITestOutputHelper output { get; set; }
 
-        public ApiTests(AuthorizedUserHTTPClientFixture authorizedUserHTTPClientFixture, ITestOutputHelper testOutputHelper) {
+        public ExternalApiTests(ITestOutputHelper testOutputHelper) {
 
-            AuthorizedUserHTTPClientFixture = authorizedUserHTTPClientFixture;
             this.output = testOutputHelper;
         }
 
@@ -29,13 +26,16 @@ namespace mvcApplication.Test.FunctionalTests
         {
             // Arrange
             string _address = "http://api.worldbank.org/countries?format=json";
+
+            // The HTTP Client being used to gather data should be configured to match your real site.
+            // IE Configure the Request Headers
+
             var client = new HttpClient();
 
             HttpResponseMessage response = client.GetAsync(_address).Result;
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadAsStringAsync();
-            //output.WriteLine(result);
 
             foreach (JArray countryData in JArray.Parse(result).Where(x => x.Type == JTokenType.Array))
             {

@@ -8,6 +8,7 @@ using Xunit;
 
 namespace mvcApplication.Test.FunctionalTests
 {
+    // Uses the AuthorizedUserHTTPClient Fixture
     public class ControllerLogicTests : IClassFixture<AuthorizedUserHTTPClientFixture>
     {
         private AuthorizedUserHTTPClientFixture AuthorizedUserHTTPClientFixture { get; set; }
@@ -16,7 +17,6 @@ namespace mvcApplication.Test.FunctionalTests
         {
             AuthorizedUserHTTPClientFixture = authorizedUserHTTPClientFixture;
         }
-
 
         [Theory]
         [InlineData("/")]
@@ -34,30 +34,6 @@ namespace mvcApplication.Test.FunctionalTests
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
-        }
-
-
-        [Fact]
-        public async Task CheckUnauthorizedUserAccess()
-        {
-            // Arrange
-            var client = AuthorizedUserHTTPClientFixture.Factory.CreateClient(
-                new WebApplicationFactoryClientOptions
-                {
-                    AllowAutoRedirect = false
-                });
-
-            // Act
-            var authorizationRequiredView = await client.GetAsync("/Home/Privacy");
-            var noAuthorizationRequiredView = await client.GetAsync("/Home/Index");
-
-            var adminView = await client.GetAsync("/Home/Admin");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, authorizationRequiredView.StatusCode);
-            Assert.Equal(HttpStatusCode.OK, noAuthorizationRequiredView.StatusCode);
-
-            Assert.Equal(HttpStatusCode.OK, noAuthorizationRequiredView.StatusCode);
         }
     }
 
@@ -92,7 +68,6 @@ namespace mvcApplication.Test.FunctionalTests
 
             // Act
             var noAuthorizationRequiredView = await UnAuthorizedUserHTTPClientFixture.GetAsync(homePageUrl);
-
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, noAuthorizationRequiredView.StatusCode);

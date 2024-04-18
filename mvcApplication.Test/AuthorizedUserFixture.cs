@@ -20,8 +20,9 @@ using System.Threading.Tasks;
 
 namespace mvcApplication.Test
 {
+    // A class fixture is used when we wish to setup a configuration to be used across multiple test classes
+    // When the AuthorizedUserHTTPClientFixture is applied to a test class, the constructor & disposal processes
 
-    // For context cleanup, add the IDisposable interface to your test class, and put the cleanup code in the Dispose() method.
     public class AuthorizedUserHTTPClientFixture : IDisposable
     {
         public HttpClient Client;
@@ -58,17 +59,68 @@ namespace mvcApplication.Test
 
             Client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(scheme: "TestScheme");
+
+
+
+            // Example of Seeding Data upon initialization of of the Fixture
+
+            /*
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var dbContext = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
+                        .UseSqlServer(Db)
+                        .Options
+                        );
+
+                // Seeding ...
+
+                AppUser? Testing_User = dbContext.AppUsers.Where(x => x.FirstName == "Controllers Test Project - Test User").SingleOrDefault();
+
+                if (Testing_User == null)
+                {
+                    Testing_User = new AppUser()
+                    {
+                        FirstName = "Controllers Test Project - Test User",
+                        LastName = "TestUser",
+                        AppUserId = new Guid("E21B64F8-8888-41EB-9999-3CDC9AA457F3"),
+                        Role = UserRole.Staff
+                    };
+
+                    dbContext.AppUsers.Add(Testing_User);
+                    dbContext.SaveChanges();
+                } else
+                {
+                    var designObjects = dbContext.StructuralDesignObjectModel.Where(x => x.AppUserId == Testing_User.AppUserId)
+                        .AsSplitQuery()
+                        .ToList();
+                    dbContext.StructuralDesignObjectModel.RemoveRange(designObjects);
+                    dbContext.SaveChanges();
+                }
+                _AppUser = Testing_User;
+
+                if (dbContext.Projects.SingleOrDefault(x => x.Name == TestProjectReference.GetTestProject().Name) == null)
+                {
+                    dbContext.Projects.Add(TestProjectReference.GetTestProject());
+                    dbContext.SaveChanges();
+                }
+            }
+            */
         }
 
 
         public void Dispose()
         {
+            // Remove Seed Data if required
+            // Dispose of any other unwanted artifacts of the test process
         }
     }
 
     // Handling Authentication with an Identity Provider through testing is a complicated procedure
 
-    // Create a 'Test Scheme' to mimic an authenticated user. 
+    // Create a 'Test Scheme' to mimic an authenticated user.
+    //
+    // You can mimic various site Groups or Roles by adjusting the claims to a test handler. 
+
 
     public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -84,7 +136,7 @@ namespace mvcApplication.Test
         {
             var claims = new[] {
                 new Claim(ClaimTypes.Name, "Test Project - Test User"),
-                new Claim(ClaimTypes.Role, "Admin"),
+                //new Claim(ClaimTypes.Role, "Admin"),
                 new Claim("uid", "E21B64F8-8888-41EB-9999-3CDC9AA457F3"),
             };
             var identity = new ClaimsIdentity(claims, "Test");
@@ -96,4 +148,18 @@ namespace mvcApplication.Test
             return Task.FromResult(result);
         }
     }
+
+
+    // Collection Fixtures
+    // When you want to create a single test context and share it among tests in several test classes, and have it cleaned up after all the tests in the test classes have finished.
+
+    // IE If you wish to use a test database with values which persist across several test classes
+    // 
+
+
+
+
+
+
+
 }

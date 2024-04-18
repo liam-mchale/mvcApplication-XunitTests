@@ -1,0 +1,21 @@
+Microsoft Unit Testing for MVC Applications
+
+https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions-1/unit-testing/creating-unit-tests-for-asp-net-mvc-applications-cs
+
+Microsoft Integration Testing for MVC Applications
+
+https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0
+
+Xunit Test Setup
+
+https://xunit.net/
+
+https://xunit.net/docs/shared-context
+
+
+
+
+The WebApplicationFactory<Program> of the Microsoft.AspNetCore.Mvc.Testing can be used to create a TestServer Instance of our project. 
+Initializing this class in our test project creates a TestServer instance of the MVC application defined in Program.cs
+
+Requires the addition of public partial class Program { } at the end of our program.cs file in the MVC application. 
